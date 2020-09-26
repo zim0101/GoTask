@@ -1,4 +1,4 @@
 package com.go_task.entity;
 
-public class TaskType {
+public class Label {
 }

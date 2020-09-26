@@ -20,9 +20,9 @@ public abstract class BaseDaoImpl<T> implements BaseDao <T> {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(entity);
             Root<T> rootEntry = criteriaQuery.from(entity);
-            CriteriaQuery<T> todos = criteriaQuery.select(rootEntry);
+            CriteriaQuery<T> objects = criteriaQuery.select(rootEntry);
 
-            return session.createQuery(todos).getResultList();
+            return session.createQuery(objects).getResultList();
         });
     }
 
@@ -30,26 +30,26 @@ public abstract class BaseDaoImpl<T> implements BaseDao <T> {
         return singleReadContext(session -> session.get(entity, id));
     }
 
-    public void create(Object todo) {
-        writeContext((session -> session.save(todo)));
+    public void create(Object object) {
+        writeContext((session -> session.save(object)));
     }
 
-    public void update(Object todo) {
-        writeContext((session -> session.update(todo)));
+    public void update(Object object) {
+        writeContext((session -> session.update(object)));
     }
 
-    public void createOrUpdate(Object todo) {
-        writeContext((session -> session.saveOrUpdate(todo)));
+    public void createOrUpdate(Object object) {
+        writeContext((session -> session.saveOrUpdate(object)));
     }
 
-    public void delete(Object todo) {
-        writeContext((session -> session.delete(todo)));
+    public void delete(Object object) {
+        writeContext((session -> session.delete(object)));
     }
 
     public void remove(int id) {
         writeContext(session -> {
-            T todo = session.get(entity, id);
-            session.remove(todo);
+            T object = session.get(entity, id);
+            session.remove(object);
         });
     }
 }
