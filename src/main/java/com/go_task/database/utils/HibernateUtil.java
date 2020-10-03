@@ -1,10 +1,9 @@
-package com.go_task.database;
+package com.go_task.database.utils;
 
 
-import com.go_task.entity.Task;
-import com.go_task.entity.User;
+import com.go_task.config.ApplicationConfig;
+import com.go_task.entity.*;
 import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -25,19 +24,23 @@ public class HibernateUtil {
 
     public static void loadSessionFactory(){
         Configuration configuration = new Configuration()
-                .configure("hibernate.cfg.xml")
+                .configure(ApplicationConfig.getHibernateXMLPath())
                 .addAnnotatedClass(User.class)
-                .addAnnotatedClass(Task.class);
+                .addAnnotatedClass(Task.class)
+                .addAnnotatedClass(UserDetails.class)
+                .addAnnotatedClass(Project.class)
+                .addAnnotatedClass(UserProject.class);
 
-        ServiceRegistry serviceRegistration = new StandardServiceRegistryBuilder()
-                .applySettings(configuration.getProperties())
-                .build();
+        ServiceRegistry serviceRegistration =
+                new StandardServiceRegistryBuilder()
+                        .applySettings(configuration.getProperties())
+                        .build();
 
         sessionFactory = configuration.buildSessionFactory(serviceRegistration);
     }
 
-    public static Session getSession() throws HibernateException {
+    public static SessionFactory sessionFactory() throws HibernateException {
 
-        return sessionFactory.openSession();
+        return sessionFactory;
     }
 }
