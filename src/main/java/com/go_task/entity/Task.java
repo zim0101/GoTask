@@ -5,14 +5,15 @@ import com.go_task.utils.enums.Priority;
 import com.go_task.utils.enums.TaskStatus;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 
 
 @Entity
-@Table(name = "tasks")
+@Table(name = "task")
 public class Task implements Serializable {
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "title")
@@ -32,23 +33,27 @@ public class Task implements Serializable {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "started_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "started_at", columnDefinition="DATETIME")
     private Date startedAt;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "end_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "end_at", columnDefinition="DATETIME")
     private Date endAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName="id")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "project_id", referencedColumnName="id")
+    private Project project;
+
     public Task() {}
 
-    public Task(int id, String title, String description, int storyPoints, TaskStatus status,
-                Priority priority, Date startedAt, Date endAt) {
-        this.id = id;
+    public Task(String title, String description, int storyPoints,
+                TaskStatus status, Priority priority, Date startedAt,
+                Date endAt, Project project) {
         this.title = title;
         this.description = description;
         this.storyPoints = storyPoints;
@@ -56,35 +61,29 @@ public class Task implements Serializable {
         this.priority = priority;
         this.startedAt = startedAt;
         this.endAt = endAt;
+        this.project = project;
     }
 
-    public Task(String title, String description, int storyPoints, TaskStatus status,
-                Priority priority, Date startedAt, Date endAt) {
-        this.title = title;
-        this.description = description;
-        this.storyPoints = storyPoints;
-        this.status = status;
-        this.priority = priority;
-        this.startedAt = startedAt;
-        this.endAt = endAt;
-    }
-
-    public Task(String title, String description, int storyPoints, Priority priority) {
+    public Task(String title, String description, int storyPoints,
+                Priority priority, Project project) {
         this.title = title;
         this.description = description;
         this.storyPoints = storyPoints;
         this.priority = priority;
         this.status = TaskStatus.STEADY;
+        this.project = project;
     }
 
-    public Task(String title, String description, int storyPoints, TaskStatus status,
-                Priority priority, User user) {
+    public Task(String title, String description, int storyPoints,
+                TaskStatus status, Priority priority, User user,
+                Project project) {
         this.title = title;
         this.description = description;
         this.storyPoints = storyPoints;
         this.status = status;
         this.priority = priority;
         this.user = user;
+        this.project = project;
     }
 
     public void setId(int id) {
@@ -92,6 +91,7 @@ public class Task implements Serializable {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -165,5 +165,29 @@ public class Task implements Serializable {
 
     public void setPriority(Priority priority) {
         this.priority = priority;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "project_id", referencedColumnName="id")
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", storyPoints=" + storyPoints +
+                ", status=" + status +
+                ", priority=" + priority +
+                ", startedAt=" + startedAt +
+                ", endAt=" + endAt +
+                '}';
     }
 }

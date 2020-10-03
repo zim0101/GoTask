@@ -8,10 +8,11 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User implements Serializable {
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "name")
@@ -23,22 +24,32 @@ public class User implements Serializable {
     @Column(name = "password")
     private String password;
 
+    @OneToOne(
+            mappedBy = "user",
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private UserDetails userDetails;
+
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.REMOVE,
             orphanRemoval = true,
-            fetch = FetchType.EAGER
+            fetch = FetchType.LAZY
     )
     private List<Task> tasks = new ArrayList<>();
 
-    public User() {}
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+//    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<UserProject> projects = new ArrayList<>();
 
-    public User(int id, String name, String email, String password) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-    }
+    public User() {}
 
     public User(String name, String email, String password) {
         this.name = name;
@@ -47,6 +58,7 @@ public class User implements Serializable {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -83,7 +95,7 @@ public class User implements Serializable {
             mappedBy = "user",
             cascade = CascadeType.REMOVE,
             orphanRemoval = true,
-            fetch = FetchType.EAGER
+            fetch = FetchType.LAZY
     )
     public List<Task> getTasks() {
         return tasks;
@@ -100,7 +112,50 @@ public class User implements Serializable {
 
     public void removeTask(Task task) {
         tasks.remove(task);
-        task.setUser(this);
+        task.setUser(null);
+    }
+
+    @OneToOne(
+            mappedBy = "user",
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    public UserDetails getUserDetails() {
+        return userDetails;
+    }
+
+    public void setUserDetails(UserDetails userDetails) {
+        this.userDetails = userDetails;
+    }
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+//    @LazyCollection(LazyCollectionOption.FALSE)
+    public List<UserProject> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<UserProject> projects) {
+        this.projects = projects;
+    }
+
+    public void addProject(Project project) {
+        UserProject userProject = new UserProject( this, project );
+        projects.add( userProject );
+        project.getUsers().add( userProject );
+    }
+
+    public void removeProject(Project project) {
+        UserProject userProject = new UserProject( this, project );
+        project.getUsers().remove( userProject );
+        projects.remove( userProject );
+        userProject.setProject( null );
+        userProject.setUser( null );
     }
 
     @Override
@@ -110,7 +165,6 @@ public class User implements Serializable {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", tasks=" + tasks +
                 '}';
     }
 }
