@@ -45,6 +45,24 @@ public abstract class QueryExecutionContext <T> {
         return data;
     }
 
+    public <U> U criteriaBuilderContext(CriteriaBuilderContextRunner<Session,
+            CriteriaBuilder, U> runner) {
+        U data = null;
+        Transaction transaction = null;
+        try {
+            Session session = HibernateUtil.sessionFactory().getCurrentSession();
+            transaction = session.beginTransaction();
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            data = runner.apply(session, criteriaBuilder);
+            transaction.commit();
+        } catch (HibernateException exception) {
+            if (transaction != null) transaction.rollback();
+            exception.getStackTrace();
+        }
+
+        return data;
+    }
+
     public void noReturnContext(Consumer<Session> consumer) {
         Transaction transaction = null;
 

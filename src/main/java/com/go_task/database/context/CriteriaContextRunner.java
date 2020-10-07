@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 
 @FunctionalInterface
-public interface CriteriaContextRunner<A,B,C, D, R> {
+public interface CriteriaContextRunner<A, B, C, D, R> {
 
     R apply(A a, B b, C c, D d);
 

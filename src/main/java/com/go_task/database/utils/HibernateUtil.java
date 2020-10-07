@@ -1,7 +1,6 @@
 package com.go_task.database.utils;
 
 
-import com.go_task.config.ApplicationConfig;
 import com.go_task.entity.*;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -24,7 +23,7 @@ public class HibernateUtil {
 
     public static void loadSessionFactory(){
         Configuration configuration = new Configuration()
-                .configure(ApplicationConfig.getHibernateXMLPath())
+                .configure("hibernate.cfg.xml")
                 .addAnnotatedClass(User.class)
                 .addAnnotatedClass(Task.class)
                 .addAnnotatedClass(UserDetails.class)
