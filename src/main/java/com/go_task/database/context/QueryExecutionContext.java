@@ -1,12 +1,12 @@
 package com.go_task.database.context;
 
 
-import javax.persistence.Table;
 import com.go_task.database.utils.HibernateUtil;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import javax.persistence.NoResultException;
+import javax.persistence.Table;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -24,16 +24,18 @@ public abstract class QueryExecutionContext <T> {
         this.tableName = entity.getAnnotation(Table.class).name();
     }
 
-    public <U> U criteriaContext(CriteriaContextRunner<Session, Root<T>,
-            CriteriaQuery<T>, CriteriaBuilder, U> runner) {
+    public <U> U criteriaContext(CriteriaContextRunner<Session,
+                                                       Root<T>,
+                                                       CriteriaQuery<T>,
+                                                       CriteriaBuilder, U> runner) {
         U data = null;
         Transaction transaction = null;
+
         try {
             Session session = HibernateUtil.sessionFactory().getCurrentSession();
             transaction = session.beginTransaction();
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<T> criteriaQuery =
-                    criteriaBuilder.createQuery(entity);
+            CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(entity);
             Root<T> root = criteriaQuery.from(entity);
             data = runner.apply(session, root, criteriaQuery, criteriaBuilder);
             transaction.commit();
@@ -46,9 +48,11 @@ public abstract class QueryExecutionContext <T> {
     }
 
     public <U> U criteriaBuilderContext(CriteriaBuilderContextRunner<Session,
-            CriteriaBuilder, U> runner) {
+                                                                     CriteriaBuilder,
+                                                                     U> runner) {
         U data = null;
         Transaction transaction = null;
+
         try {
             Session session = HibernateUtil.sessionFactory().getCurrentSession();
             transaction = session.beginTransaction();

@@ -5,11 +5,8 @@ import com.go_task.entity.Project;
 import com.go_task.entity.User;
 import com.go_task.entity.UserProject;
 import com.go_task.entity.UserProject_;
-import org.hibernate.criterion.ProjectionList;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 
 public class UserProjectDao extends BaseDaoImpl <UserProject> {
@@ -19,8 +16,7 @@ public class UserProjectDao extends BaseDaoImpl <UserProject> {
     }
 
     public boolean userIsAssignedToProject(User user, Project project) {
-        UserProject userProject = (UserProject)
-            criteriaContext((session, root, criteria,builder) -> {
+        UserProject userProject = criteriaContext((session, root, criteria,builder) -> {
                 criteria.select(root)
                         .where(builder.equal(root.get(UserProject_.user), user))
                         .where(builder.equal(root.get(UserProject_.project),
@@ -50,6 +46,7 @@ public class UserProjectDao extends BaseDaoImpl <UserProject> {
 
     public List<Project> getProjectsOfUser(int userId) {
         List<Project> projects = new ArrayList<>();
+
         noReturnContext(session -> {
             User user = session.get(User.class, userId);
             user.getProjects().forEach(userProject ->
@@ -61,6 +58,7 @@ public class UserProjectDao extends BaseDaoImpl <UserProject> {
 
     public List<User> getUsersOfProject(int projectId) {
         List<User> users = new ArrayList<>();
+
         noReturnContext(session -> {
             Project project = session.get(Project.class, projectId);
             project.getUsers().forEach(userProject ->

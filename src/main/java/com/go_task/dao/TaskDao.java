@@ -32,34 +32,34 @@ public class TaskDao extends BaseDaoImpl <Task> {
                     to
             );
             criteria.select(root).where(storyPointBetween);
+
             return session.createQuery(criteria).getResultList();
         });
     }
 
-    public List<Task> getTaskListByStatus(TaskStatus status) {
+    public List<Task> tasksByStatusList(TaskStatus status) {
         return criteriaContext((session, root, criteria, builder) -> {
             Predicate matchStatus = builder.equal(
                     root.get(Task_.status), status
             );
             criteria.select(root).where(matchStatus);
+
             return session.createQuery(criteria).getResultList();
         });
     }
 
-    public List<TotalTaskByStatusDto> taskAnalyticsListGroupedByStatus() {
+    public List<TotalTaskByStatusDto> totalTaskCountGroupedByStatusList() {
         return criteriaBuilderContext((session, builder) -> {
             CriteriaQuery<TotalTaskByStatusDto> criteria =
                     builder.createQuery(TotalTaskByStatusDto.class);
             Root<Task> root = criteria.from(Task.class);
-
             Expression<TaskStatus> groupByStatus = root.get(Task_.STATUS).as(TaskStatus.class);
             Expression<Long> countTaskCount = builder.count(groupByStatus);
             Order totalTaskCountInDescendingOrder = builder.desc(countTaskCount);
 
-            CriteriaQuery<TotalTaskByStatusDto> select =
-                    criteria.multiselect(groupByStatus, countTaskCount);
-
             criteria.groupBy(groupByStatus).orderBy(totalTaskCountInDescendingOrder);
+            CriteriaQuery<TotalTaskByStatusDto> select = criteria.multiselect(groupByStatus,
+                                                                              countTaskCount);
 
             return session.createQuery(select).getResultList();
         });
